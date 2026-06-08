@@ -103,11 +103,6 @@ final AS (
         CASE WHEN o.order_status = 'cancelled'  THEN TRUE ELSE FALSE END AS is_cancelled,
         CASE WHEN o.order_status = 'completed'  THEN TRUE ELSE FALSE END AS is_completed,
 
-        -- ── Load Date Parts (from CURRENT_TIMESTAMP) ───────────────────
-        EXTRACT(DAY   FROM CURRENT_TIMESTAMP()) AS current_day,
-        EXTRACT(MONTH FROM CURRENT_TIMESTAMP()) AS current_month,
-        EXTRACT(YEAR  FROM CURRENT_TIMESTAMP()) AS current_year,
-
         -- ── Metadata ───────────────────────────────────────────────────
         CURRENT_TIMESTAMP()                     AS _dbt_updated_at
 
