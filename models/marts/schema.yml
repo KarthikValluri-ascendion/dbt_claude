@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: >
+      Order fact table — one row per order. Enriched with customer context and
+      revenue metrics. Incrementally loaded (merge on order_id).
+    columns:
+      - name: order_id
+        description: Natural key — unique identifier for an order.
+        tests:
+          - unique
+          - not_null
+
+      # ── Load date parts (SCRUM-5) ──────────────────────────────────────
+      - name: current_day
+        description: Day-of-month (1-31) of the load timestamp (CURRENT_TIMESTAMP).
+        tests:
+          - not_null
+      - name: current_month
+        description: Month (1-12) of the load timestamp (CURRENT_TIMESTAMP).
+        tests:
+          - not_null
+      - name: current_year
+        description: Year (e.g. 2026) of the load timestamp (CURRENT_TIMESTAMP).
+        tests:
+          - not_null
