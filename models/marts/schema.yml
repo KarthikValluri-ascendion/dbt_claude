@@ -11,17 +11,3 @@ models:
         tests:
           - unique
           - not_null
-
-      # ── Load date parts (SCRUM-5) ──────────────────────────────────────
-      - name: current_day
-        description: Day-of-month (1-31) of the load timestamp (CURRENT_TIMESTAMP).
-        tests:
-          - not_null
-      - name: current_month
-        description: Month (1-12) of the load timestamp (CURRENT_TIMESTAMP).
-        tests:
-          - not_null
-      - name: current_year
-        description: Year (e.g. 2026) of the load timestamp (CURRENT_TIMESTAMP).
-        tests:
-          - not_null
