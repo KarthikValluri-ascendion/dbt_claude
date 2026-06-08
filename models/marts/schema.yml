@@ -11,3 +11,17 @@ models:
         tests:
           - unique
           - not_null
+
+      # ── dbt-update-at date parts (SCRUM-7) ─────────────────────────────
+      - name: dbt_updated_day
+        description: Day-of-month (1-31) extracted from the _dbt_updated_at timestamp.
+        tests:
+          - not_null
+      - name: dbt_updated_month
+        description: Month (1-12) extracted from the _dbt_updated_at timestamp.
+        tests:
+          - not_null
+      - name: dbt_updated_year
+        description: Year (e.g. 2026) extracted from the _dbt_updated_at timestamp.
+        tests:
+          - not_null

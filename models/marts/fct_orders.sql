@@ -111,6 +111,14 @@ final AS (
 
 )
 
-SELECT * FROM final
+SELECT
+    final.*,
+
+    -- ── dbt-update-at Date Parts (derived from _dbt_updated_at) ─────────
+    EXTRACT(DAY   FROM _dbt_updated_at) AS dbt_updated_day,
+    EXTRACT(MONTH FROM _dbt_updated_at) AS dbt_updated_month,
+    EXTRACT(YEAR  FROM _dbt_updated_at) AS dbt_updated_year
+
+FROM final
 
 {{fct_logger()}}
