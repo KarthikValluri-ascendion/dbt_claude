@@ -25,16 +25,3 @@ models:
         description: Year (e.g. 2026) extracted from the _dbt_updated_at timestamp.
         tests:
           - not_null
-
-      # ── order_value_band classification (SCRUM-8) ─────────────────────
-      - name: order_value_band
-        description: >
-          Categorical order-size band derived from final_order_amount, for
-          consistent revenue slicing in BI. Bands: JUMBO (>= 1000),
-          LARGE (>= 500), MEDIUM (>= 100), SMALL (> 0), ZERO (= 0 / no charge,
-          e.g. cancelled or returned orders). Thresholds are the ticket-proposed
-          defaults.
-        tests:
-          - not_null
-          - accepted_values:
-              values: ['JUMBO', 'LARGE', 'MEDIUM', 'SMALL', 'ZERO']
