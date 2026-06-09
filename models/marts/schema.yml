@@ -38,3 +38,15 @@ models:
           - not_null
           - accepted_values:
               values: ['JUMBO', 'LARGE', 'MEDIUM', 'SMALL', 'ZERO']
+
+      # ── customer_region classification (SCRUM-11) ─────────────────────
+      - name: customer_region
+        description: >
+          Geographic region of the order's customer, for regional revenue
+          slicing in BI. US customers are mapped to their U.S. Census Bureau
+          region by state (Northeast, Midwest, South, West); non-US customers
+          are 'International'; any unmapped state falls back to 'Unknown'.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Northeast', 'Midwest', 'South', 'West', 'International', 'Unknown']
