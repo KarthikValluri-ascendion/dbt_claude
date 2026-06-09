@@ -87,6 +87,18 @@ final AS (
             ELSE 0
         END                                     AS recognized_revenue,
 
+        -- ── Order Value Band (SCRUM-10) ────────────────────────────────
+        -- Categorical bucket of final_order_amount for consistent
+        -- order-size slicing in BI. Thresholds are defaults proposed in
+        -- the ticket — adjust here if Revenue Analytics refines the bands.
+        CASE
+            WHEN o.final_order_amount >= 1000 THEN 'JUMBO'
+            WHEN o.final_order_amount >= 500  THEN 'LARGE'
+            WHEN o.final_order_amount >= 100  THEN 'MEDIUM'
+            WHEN o.final_order_amount > 0     THEN 'SMALL'
+            ELSE 'ZERO'
+        END                                     AS order_value_band,
+
         -- ── Payment ────────────────────────────────────────────────────
         o.payment_method,
         o.has_successful_payment,
