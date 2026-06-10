@@ -1,0 +1,3 @@
+metric_key,business_name,canonical_definition,unit,owner,steward,certification_status,system_of_record,threshold_pct,refresh_cadence
+arr,Annual Recurring Revenue,Annualized recurring subscription revenue from active billing (sum of MRR x 12) across all active subscriptions.,USD,Finance,RevOps,Certified,Zuora,5,daily
+active_seats,Active Seats,Distinct user seats with product activity in the trailing 30 days (actual usage),seats,Customer Success,Product Analytics,Certified,Product,5,daily

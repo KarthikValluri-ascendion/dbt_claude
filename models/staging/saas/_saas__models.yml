@@ -2,28 +2,37 @@ version: 2
 
 models:
   - name: stg_saas_salesforce
-    description: "Staged Salesforce CRM account seats (contracted)."
+    description: "Staged Salesforce CRM account ARR & seats (contracted/booking view)."
     columns:
       - name: account_id
         tests: [not_null, unique]
+      - name: booking_arr
+        description: "Contracted/booking ARR from signed opportunities."
+        tests: [not_null]
       - name: contracted_seats
         description: "Seats sold / contracted per the CRM order."
         tests: [not_null]
 
   - name: stg_saas_zuora
-    description: "Staged Zuora subscription seats (provisioned)."
+    description: "Staged Zuora subscription MRR & seats (active billing view)."
     columns:
       - name: account_id
         tests: [not_null, unique]
+      - name: mrr
+        description: "Monthly recurring revenue on the active subscription (ARR = mrr x 12)."
+        tests: [not_null]
       - name: provisioned_seats
         description: "Seats provisioned on the active billing subscription."
         tests: [not_null]
 
   - name: stg_saas_product
-    description: "Staged Product usage seats (actual 30-day active)."
+    description: "Staged Product usage ARR & seats (actual 30-day active)."
     columns:
       - name: account_id
         tests: [not_null, unique]
+      - name: usage_implied_arr
+        description: "Usage-based revenue estimate implied by product consumption."
+        tests: [not_null]
       - name: active_seats_30d
         description: "Distinct seats active in the last 30 days (system of record)."
         tests: [not_null]

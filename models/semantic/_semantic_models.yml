@@ -1,0 +1,53 @@
+version: 2
+
+# ---------------------------------------------------------------------------
+# dbt MetricFlow (Semantic Layer) — SERVING layer over the certified marts.
+# The registry engine RECONCILES + CERTIFIES (picks the system of record); this
+# layer SERVES the certified number consistently to every consumer (BI, notebooks)
+# via `dbt sl query` / the Semantic Layer API. Complementary, not a replacement:
+# MetricFlow does not reconcile conflicting sources — that's the engine's job.
+#
+# Querying requires `pip install dbt-metricflow`; the definitions below are part
+# of the dbt-core schema and validate with `dbt parse`.
+# ---------------------------------------------------------------------------
+
+semantic_models:
+  - name: certified_metrics
+    description: Certified metric values, one row per metric per account (single source of truth).
+    model: ref('metric_certified')
+    defaults:
+      agg_time_dimension: snapshot_date
+    entities:
+      - name: account
+        type: primary
+        expr: account_id
+    dimensions:
+      - name: metric_key
+        type: categorical
+      - name: snapshot_date
+        type: time
+        type_params:
+          time_granularity: day
+    measures:
+      - name: certified_value_total
+        description: Sum of certified value (filter by metric to get a specific metric).
+        agg: sum
+        expr: certified_value
+        agg_time_dimension: snapshot_date
+
+metrics:
+  - name: certified_arr
+    description: Certified Annual Recurring Revenue (system of record = Zuora).
+    label: Certified ARR
+    type: simple
+    type_params:
+      measure: certified_value_total
+    filter: "{{ Dimension('account__metric_key') }} = 'arr'"
+
+  - name: certified_active_seats
+    description: Certified Active Seats (system of record = Product usage telemetry).
+    label: Certified Active Seats
+    type: simple
+    type_params:
+      measure: certified_value_total
+    filter: "{{ Dimension('account__metric_key') }} = 'active_seats'"

@@ -19,6 +19,7 @@ renamed AS (
     SELECT
         account_id,
         account_name,
+        booking_arr,
         contracted_seats,
         opportunity_stage,
         _loaded_at

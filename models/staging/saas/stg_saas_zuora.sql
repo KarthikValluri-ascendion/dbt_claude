@@ -19,6 +19,7 @@ renamed AS (
     SELECT
         account_id,
         account_name,
+        mrr,
         provisioned_seats,
         subscription_status,
         _loaded_at

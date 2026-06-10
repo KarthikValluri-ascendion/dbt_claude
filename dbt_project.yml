@@ -45,3 +45,25 @@ models:
       +schema: marts
       +materialized: table
       +tags: ['marts']
+
+# Seeds — the registry (governance catalog) lands in its own schema.
+seeds:
+  dbt01:
+    registry:
+      +schema: seed_raw
+      +tags: ['registry']
+
+# ---------------------------------------------------------------------------
+# Metric source map (drives the registry-driven reconciliation engine).
+# Each entry = one (metric, source) pair: where the value comes from and how.
+# ADD A METRIC / SOURCE = add an entry here (+ a registry row) — no new SQL file.
+# The macro build_metric_values_by_source() iterates this to build the tall fact.
+# ---------------------------------------------------------------------------
+vars:
+  metric_sources:
+    - {metric_key: active_seats, source_system: Salesforce, source_model: stg_saas_salesforce, value_sql: 'contracted_seats'}
+    - {metric_key: active_seats, source_system: Zuora,      source_model: stg_saas_zuora,      value_sql: 'provisioned_seats'}
+    - {metric_key: active_seats, source_system: Product,    source_model: stg_saas_product,    value_sql: 'active_seats_30d'}
+    - {metric_key: arr,          source_system: Salesforce, source_model: stg_saas_salesforce, value_sql: 'booking_arr'}
+    - {metric_key: arr,          source_system: Zuora,      source_model: stg_saas_zuora,      value_sql: 'mrr * 12'}
+    - {metric_key: arr,          source_system: Product,    source_model: stg_saas_product,    value_sql: 'usage_implied_arr'}
