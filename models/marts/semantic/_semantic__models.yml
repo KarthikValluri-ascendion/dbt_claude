@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: metric_active_seats
+    description: >
+      Certified single source of truth for Active Seats, one row per account.
+      System of record = Product usage telemetry (active_seats_30d): actual logins,
+      not contracted (CRM) or provisioned (billing) seats.
+    columns:
+      - name: account_id
+        description: Account identifier.
+        tests: [not_null, unique]
+      - name: certified_active_seats
+        description: Certified active seats for the account (Product 30-day active).
+        tests: [not_null]
+      - name: system_of_record
+        description: The source system designated authoritative for this metric.
+        tests: [not_null]
+
+  - name: rpt_active_seats_reconciliation
+    description: >
+      Active-seats reconciliation — each source system's seat count vs the certified
+      value, with absolute/percentage variance and a >5% discrepancy flag. Surfaces
+      over-provisioned (CRM/billing above actual) and under-used accounts.
+    columns:
+      - name: account_id
+        description: Account identifier.
+        tests: [not_null]
+      - name: source_system
+        description: Source system the seat count came from.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Salesforce', 'Zuora', 'Product']
+      - name: source_active_seats
+        description: The seat count as reported by this source system.
+        tests: [not_null]
+      - name: certified_active_seats
+        description: The certified (system-of-record) seat count for the account.
+        tests: [not_null]
+      - name: is_discrepant
+        description: TRUE when the source's seats differ from certified by more than 5%.

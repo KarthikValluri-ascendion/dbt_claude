@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+  - name: saas
+    database: DB01
+    schema: SAAS_RAW
+    description: >
+      Mock SaaS source systems for the metric-reconciliation demo — Salesforce CRM,
+      Zuora billing, and Product usage telemetry. Each reports seats (and ARR) with
+      intentionally divergent logic. Seeded once by demo_setup/00_demo_setup.sql.
+    tables:
+      - name: salesforce_accounts
+        description: "Salesforce CRM accounts — contracted booking ARR & contracted seats."
+        columns:
+          - name: account_id
+            description: "Account identifier (shared across source systems)."
+            tests: [not_null, unique]
+          - name: contracted_seats
+            tests: [not_null]
+      - name: zuora_subscriptions
+        description: "Zuora billing subscriptions — MRR & provisioned seats (active billing)."
+        columns:
+          - name: account_id
+            description: "Account identifier (shared across source systems)."
+            tests: [not_null, unique]
+          - name: provisioned_seats
+            tests: [not_null]
+      - name: product_usage
+        description: "Product usage telemetry — actual 30-day active seats (system of record)."
+        columns:
+          - name: account_id
+            description: "Account identifier (shared across source systems)."
+            tests: [not_null, unique]
+          - name: active_seats_30d
+            tests: [not_null]

@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: stg_saas_salesforce
+    description: "Staged Salesforce CRM account seats (contracted)."
+    columns:
+      - name: account_id
+        tests: [not_null, unique]
+      - name: contracted_seats
+        description: "Seats sold / contracted per the CRM order."
+        tests: [not_null]
+
+  - name: stg_saas_zuora
+    description: "Staged Zuora subscription seats (provisioned)."
+    columns:
+      - name: account_id
+        tests: [not_null, unique]
+      - name: provisioned_seats
+        description: "Seats provisioned on the active billing subscription."
+        tests: [not_null]
+
+  - name: stg_saas_product
+    description: "Staged Product usage seats (actual 30-day active)."
+    columns:
+      - name: account_id
+        tests: [not_null, unique]
+      - name: active_seats_30d
+        description: "Distinct seats active in the last 30 days (system of record)."
+        tests: [not_null]
