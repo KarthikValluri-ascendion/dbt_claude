@@ -1,0 +1,40 @@
+version: 2
+
+seeds:
+  - name: metric_registry
+    description: >
+      Governance catalog (Atlan-style) — one row per business metric: its canonical
+      definition, owner/steward, certification status, the SYSTEM OF RECORD that
+      wins reconciliation, and the discrepancy threshold. The reconciliation engine
+      reads system_of_record / threshold_pct from here; rules are data, not SQL.
+    columns:
+      - name: metric_key
+        description: Stable key joining the registry to the source map and the engine.
+        tests: [not_null, unique]
+      - name: certification_status
+        tests:
+          - accepted_values:
+              values: ['Certified', 'Draft', 'Deprecated']
+      - name: system_of_record
+        description: The source system whose value is authoritative for this metric.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Salesforce', 'Zuora', 'Product']
+      - name: threshold_pct
+        description: Percentage variance above which a source is flagged is_discrepant.
+        tests: [not_null]
+
+  - name: metric_source_map
+    description: >
+      One row per (metric, source system): which staged model/column provides the
+      value, the source's own logic, and known caveats. Human-facing catalog of the
+      same mapping the engine consumes via the metric_sources var.
+    columns:
+      - name: metric_key
+        tests: [not_null]
+      - name: source_system
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Salesforce', 'Zuora', 'Product']

@@ -1,0 +1,7 @@
+metric_key,source_system,source_model,value_column,source_logic,known_caveats
+arr,Salesforce,stg_saas_salesforce,booking_arr,Contracted/booking ARR from signed Closed Won opportunities,Includes signed-but-not-yet-billed and does not drop churned accounts; overstates.
+arr,Zuora,stg_saas_zuora,mrr * 12,Billing ARR = active subscription MRR x 12,System of record; excludes churned subscriptions (coverage gaps possible).
+arr,Product,stg_saas_product,usage_implied_arr,Usage-based revenue estimate implied by product consumption,Approximation; lags contract value.
+active_seats,Salesforce,stg_saas_salesforce,contracted_seats,Seats sold/contracted on the CRM order,Contracted not used; overstates.
+active_seats,Zuora,stg_saas_zuora,provisioned_seats,Seats provisioned on the active billing subscription,Provisioned not necessarily active.
+active_seats,Product,stg_saas_product,active_seats_30d,Distinct seats active in the last 30 days,System of record; true active usage.

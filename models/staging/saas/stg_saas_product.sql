@@ -19,6 +19,7 @@ renamed AS (
     SELECT
         account_id,
         account_name,
+        usage_implied_arr,
         active_seats_30d,
         _loaded_at
     FROM source

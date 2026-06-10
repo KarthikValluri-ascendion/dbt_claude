@@ -15,6 +15,8 @@ sources:
           - name: account_id
             description: "Account identifier (shared across source systems)."
             tests: [not_null, unique]
+          - name: booking_arr
+            tests: [not_null]
           - name: contracted_seats
             tests: [not_null]
       - name: zuora_subscriptions
@@ -23,6 +25,8 @@ sources:
           - name: account_id
             description: "Account identifier (shared across source systems)."
             tests: [not_null, unique]
+          - name: mrr
+            tests: [not_null]
           - name: provisioned_seats
             tests: [not_null]
       - name: product_usage
@@ -31,5 +35,7 @@ sources:
           - name: account_id
             description: "Account identifier (shared across source systems)."
             tests: [not_null, unique]
+          - name: usage_implied_arr
+            tests: [not_null]
           - name: active_seats_30d
             tests: [not_null]
