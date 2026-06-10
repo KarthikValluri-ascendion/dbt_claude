@@ -99,6 +99,22 @@ final AS (
             ELSE 'ZERO'
         END                                     AS order_value_band,
 
+        -- ── Discount Tier (SCRUM-15) ───────────────────────────────────
+        -- Categorical bucket of the header-level discount percentage
+        -- (header_discount_pct, expressed 0-100) so every report slices
+        -- discount depth the same way. Bands (lower-exclusive,
+        -- upper-inclusive): NONE = 0%, LOW = (0%, 10%], MEDIUM = (10%, 25%],
+        -- HIGH = > 25%. header_discount_pct is non-null upstream
+        -- (stg_orders COALESCEs to 0 and filters 0-100); the NULL guard
+        -- keeps discount_tier non-null defensively.
+        CASE
+            WHEN o.header_discount_pct IS NULL
+              OR o.header_discount_pct = 0    THEN 'NONE'
+            WHEN o.header_discount_pct <= 10   THEN 'LOW'
+            WHEN o.header_discount_pct <= 25   THEN 'MEDIUM'
+            ELSE 'HIGH'
+        END                                     AS discount_tier,
+
         -- ── Payment ────────────────────────────────────────────────────
         o.payment_method,
         o.has_successful_payment,
