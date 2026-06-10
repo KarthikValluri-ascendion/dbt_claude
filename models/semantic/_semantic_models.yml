@@ -51,3 +51,11 @@ metrics:
     type_params:
       measure: certified_value_total
     filter: "{{ Dimension('account__metric_key') }} = 'active_seats'"
+
+  - name: certified_active_customers
+    description: Certified Active Customers (system of record = Zuora active subscriptions).
+    label: Certified Active Customers
+    type: simple
+    type_params:
+      measure: certified_value_total
+    filter: "{{ Dimension('account__metric_key') }} = 'active_customers'"

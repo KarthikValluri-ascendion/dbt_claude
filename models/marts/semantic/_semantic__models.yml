@@ -11,7 +11,7 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ['arr', 'active_seats']
+              values: ['arr', 'active_seats', 'active_customers']
       - name: account_id
         tests: [not_null]
       - name: certified_value
