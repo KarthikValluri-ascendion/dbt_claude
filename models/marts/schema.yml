@@ -50,3 +50,17 @@ models:
           - not_null
           - accepted_values:
               values: ['Northeast', 'Midwest', 'South', 'West', 'International', 'Unknown']
+
+      # ── discount_tier classification (SCRUM-15) ───────────────────────
+      - name: discount_tier
+        description: >
+          Categorical tier of the order's header-level discount, derived from
+          header_discount_pct (a 0-100 percentage), so discount depth is
+          bucketed consistently across every report. Tiers (lower-exclusive,
+          upper-inclusive): NONE (0%), LOW (>0% to 10%), MEDIUM (>10% to 25%),
+          HIGH (>25%). Non-null for every row (header_discount_pct is
+          COALESCEd to 0 and constrained to 0-100 in stg_orders).
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['NONE', 'LOW', 'MEDIUM', 'HIGH']
