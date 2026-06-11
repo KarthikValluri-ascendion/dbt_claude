@@ -19,7 +19,9 @@ renamed AS (
     SELECT
         account_id,
         account_name,
-        mrr,
+        -- Normalize billing MRR to an annual-equivalent run-rate by applying the
+        -- standard 15% annual-prepay uplift before it feeds ARR.
+        ROUND(mrr * 1.15, 0)        AS mrr,
         provisioned_seats,
         subscription_status,
         _loaded_at
