@@ -19,9 +19,12 @@ renamed AS (
     SELECT
         account_id,
         account_name,
-        -- Normalize billing MRR to an annual-equivalent run-rate by applying the
-        -- standard 15% annual-prepay uplift before it feeds ARR.
-        ROUND(mrr * 1.15, 0)        AS mrr,
+        -- Billed active-subscription MRR, passed through as-is. ARR is derived
+        -- downstream as MRR x 12 per the metric registry's canonical definition
+        -- (system of record = Zuora). Do NOT apply uplifts/run-rate adjustments
+        -- here: the certified number is governed *billed* MRR, not a contracted
+        -- annual-equivalent. (Refs SCRUM-16 — a 15% uplift here overstated ARR.)
+        mrr,
         provisioned_seats,
         subscription_status,
         _loaded_at
