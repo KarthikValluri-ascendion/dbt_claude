@@ -22,12 +22,34 @@ models:
       - name: user_id
         tests: [not_null]
 
+  - name: brz_zoom_zuora_billing
+    description: "Bronze: 1:1 typed landing of Zuora billing (the billing system of record), one row per subscription."
+    columns:
+      - name: subscription_id
+        tests: [not_null, unique]
+      - name: billing_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'past_due', 'cancelled']
+
   # ── Silver ───────────────────────────────────────────────────────────────
+  - name: slv_zoom_zuora_billing
+    description: >
+      Silver: conformed Zuora billing (one row per subscription with billing_status).
+      The billing arbiter used by slv_zoom_phone_subscriptions. Zuora has NO certified
+      gold metric of its own.
+    columns:
+      - name: subscription_id
+        tests: [not_null, unique]
+      - name: billing_status
+        tests: [not_null]
+
   - name: slv_zoom_phone_subscriptions
     description: >
-      Silver: conformed Zoom Phone subscriptions feeding ARR. Per the certified
-      catalog, ARR is built from ACTIVE lines only — cancelled/suspended lines
-      should be filtered out here.
+      Silver: Zoom Phone subscriptions feeding ARR. Per the certified catalog, a line
+      counts only if it is line-active AND Zuora confirms billing_status='active'
+      (past_due/cancelled excluded). Zuora is the billing arbiter.
     columns:
       - name: subscription_id
         tests: [not_null, unique]
@@ -45,8 +67,9 @@ models:
   # ── Gold ─────────────────────────────────────────────────────────────────
   - name: gld_zoom_certified_metrics
     description: >
-      Gold: one row per certified Zoom Phone metric, value COMPUTED from silver
-      per the catalog's system-of-record. Must tally with the certified catalog.
+      Gold: one row per certified Zoom Phone metric, value COMPUTED from silver per
+      the catalog's system-of-record. Must tally with the certified catalog. (No Zuora
+      row — Zuora is a silver arbiter, not a certified metric.)
     columns:
       - name: metric_key
         tests:
@@ -61,21 +84,34 @@ models:
 
   - name: gld_zoom_metric_reconciliation
     description: >
-      Gold: each computed Zoom Phone metric vs the certified catalog, with
-      variance and a discrepancy flag (|variance| > threshold). The gold<->catalog
-      tally the reconciliation skill grounds on.
+      Gold: each computed Zoom Phone metric vs the certified catalog, with variance and
+      a discrepancy flag. The gold<->catalog tally the reconciliation skill grounds on.
     columns:
       - name: metric_key
         tests: [not_null, unique]
       - name: is_discrepant
         description: TRUE when the computed gold value diverges from the certified catalog beyond threshold.
 
+  - name: gld_zoom_arr_by_source
+    description: >
+      Gold (reporting): the "one metric, three meanings" view for phone_arr -
+      contracted (Subscriptions), invoiced (Zuora), usage-implied (Telemetry) side by
+      side, with a flag for which value matches the certified catalog. Illustrates why
+      the number never ties out across systems.
+    columns:
+      - name: source_system
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Subscriptions', 'Zuora', 'Telemetry']
+      - name: arr_value
+        tests: [not_null]
+
 seeds:
   - name: mart_zoom_metric_catalog
     description: >
       The certified Zoom Phone metric catalog / glossary — canonical definition,
-      system-of-record, certified target value, and discrepancy threshold per
-      metric. Trusted source the gold layer must reconcile against.
+      system-of-record, certified target value, and discrepancy threshold per metric.
     columns:
       - name: metric_key
         tests: [not_null, unique]
@@ -84,3 +120,14 @@ seeds:
           - not_null
           - accepted_values:
               values: ['Billing', 'Telemetry']
+
+  - name: raw_zoom_zuora_billing
+    description: "Raw Zuora billing seed (billing system of record): subscription billing status + invoice amount."
+    columns:
+      - name: subscription_id
+        tests: [not_null, unique]
+      - name: billing_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['active', 'past_due', 'cancelled']
