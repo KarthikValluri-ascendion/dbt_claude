@@ -22,6 +22,6 @@ SELECT
     mrr,
     provisioned_seats
 FROM src
--- NOTE: the catalog definition is "ACTIVE Zoom Phone subscriptions", but this
--- model currently passes through every line_status (active + cancelled +
--- suspended), which overstates Zoom Phone ARR downstream in gold.
+-- Per the certified catalog, Zoom Phone ARR counts ACTIVE subscriptions only.
+-- Exclude cancelled/suspended lines here so gold reconciles to the catalog.
+WHERE line_status = 'active'  -- Refs SCRUM-19
