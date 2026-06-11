@@ -125,29 +125,6 @@ final AS (
         c.state_code                            AS customer_state,
         c.country_code                          AS customer_country,
 
-        -- ── Customer Region (SCRUM-11) ─────────────────────────────────
-        -- Geographic grouping of the customer for regional revenue
-        -- slicing in BI. US customers are mapped to their U.S. Census
-        -- Bureau region by state; non-US customers are 'International';
-        -- anything unmapped falls back to 'Unknown'.
-        CASE
-            WHEN c.country_code <> 'USA' THEN 'International'
-            WHEN c.state_code IN (
-                'CT','ME','MA','NH','RI','VT','NJ','NY','PA'
-            )                                       THEN 'Northeast'
-            WHEN c.state_code IN (
-                'IL','IN','MI','OH','WI','IA','KS','MN','MO','NE','ND','SD'
-            )                                       THEN 'Midwest'
-            WHEN c.state_code IN (
-                'DE','FL','GA','MD','NC','SC','VA','DC','WV','AL','KY',
-                'MS','TN','AR','LA','OK','TX'
-            )                                       THEN 'South'
-            WHEN c.state_code IN (
-                'AZ','CO','ID','MT','NV','NM','UT','WY','AK','CA','HI',
-                'OR','WA'
-            )                                       THEN 'West'
-            ELSE 'Unknown'
-        END                                     AS customer_region,
         c.is_customer_active,
 
         -- ── Flags ──────────────────────────────────────────────────────
