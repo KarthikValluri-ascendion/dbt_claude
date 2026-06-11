@@ -33,6 +33,6 @@ SELECT
     s.provisioned_seats
 FROM subs s
 JOIN zuora z USING (subscription_id)
--- Keep only lines Zuora confirms are billable. NOTE: this also lets through
--- 'past_due' lines, which are not collectible and overstate certified ARR.
-WHERE z.billing_status IN ('active', 'past_due')
+-- Keep only lines Zuora confirms are billable (collectible). Per the certified
+-- catalog, past_due and cancelled lines are excluded from ARR. (Refs SCRUM-20)
+WHERE z.billing_status = 'active'
