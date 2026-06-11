@@ -1,27 +1,38 @@
 /*
   MODEL: slv_zoom_phone_subscriptions
   LAYER: Silver (conform / business logic) - Zoom Phone medallion
-  DEPENDS ON: brz_zoom_phone_subscriptions
+  DEPENDS ON: brz_zoom_phone_subscriptions, slv_zoom_zuora_billing
 
   PURPOSE:
-    - Conform Zoom Phone subscriptions for revenue metrics. Per the certified
-      catalog, Zoom Phone ARR is built from ACTIVE subscription MRR only;
-      cancelled and suspended lines must be excluded here in silver.
+    - Conform Zoom Phone subscriptions for ARR. Per the certified catalog, Zoom
+      Phone ARR counts subscriptions that are line-active AND that Zuora confirms
+      are billing-ACTIVE (billing_status='active'). Past-due and cancelled lines
+      are not collectible and must be excluded. Zuora is the billing arbiter.
 */
-WITH src AS (
+WITH subs AS (
 
     SELECT * FROM {{ ref('brz_zoom_phone_subscriptions') }}
+    WHERE line_status = 'active'
+
+),
+
+zuora AS (
+
+    SELECT subscription_id, billing_status
+    FROM {{ ref('slv_zoom_zuora_billing') }}
 
 )
 
 SELECT
-    subscription_id,
-    account_id,
-    account_name,
-    line_status,
-    mrr,
-    provisioned_seats
-FROM src
--- Per the certified catalog, Zoom Phone ARR counts ACTIVE subscriptions only.
--- Exclude cancelled/suspended lines here so gold reconciles to the catalog.
-WHERE line_status = 'active'  -- Refs SCRUM-19
+    s.subscription_id,
+    s.account_id,
+    s.account_name,
+    s.line_status,
+    z.billing_status,
+    s.mrr,
+    s.provisioned_seats
+FROM subs s
+JOIN zuora z USING (subscription_id)
+-- Keep only lines Zuora confirms are billable. NOTE: this also lets through
+-- 'past_due' lines, which are not collectible and overstate certified ARR.
+WHERE z.billing_status IN ('active', 'past_due')
