@@ -1,0 +1,10 @@
+call_id,user_id,account_id,call_minutes,direction,call_started_at
+cdr-001,usr-001,acc-101,12.5,outbound,2026-06-10 09:15:00
+cdr-002,usr-002,acc-101,5.0,inbound,2026-06-09 14:02:00
+cdr-003,usr-003,acc-102,8.0,outbound,2026-06-08 11:30:00
+cdr-004,usr-004,acc-103,3.5,outbound,2026-06-07 16:45:00
+cdr-005,usr-005,acc-104,20.0,inbound,2026-06-05 10:00:00
+cdr-006,usr-006,acc-105,15.0,outbound,2026-06-03 13:20:00
+cdr-007,usr-001,acc-101,2.0,inbound,2026-06-02 08:05:00
+cdr-008,usr-003,acc-102,7.5,outbound,2026-06-01 17:10:00
+cdr-009,usr-007,acc-106,4.0,outbound,2026-04-01 12:00:00

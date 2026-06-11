@@ -46,12 +46,31 @@ models:
       +materialized: table
       +tags: ['marts']
 
+    # Zoom Phone medallion (self-contained demo: bronze -> silver -> gold,
+    # gold certified against the Zoom metric catalog).
+    medallion:
+      bronze:
+        +schema: bronze
+        +materialized: view
+        +tags: ['medallion', 'bronze']
+      silver:
+        +schema: silver
+        +materialized: view
+        +tags: ['medallion', 'silver']
+      gold:
+        +schema: gold
+        +materialized: table
+        +tags: ['medallion', 'gold']
+
 # Seeds — the registry (governance catalog) lands in its own schema.
 seeds:
   dbt01:
     registry:
       +schema: seed_raw
       +tags: ['registry']
+    medallion:
+      +schema: seed_raw
+      +tags: ['medallion']
 
 # ---------------------------------------------------------------------------
 # Metric source map (drives the registry-driven reconciliation engine).

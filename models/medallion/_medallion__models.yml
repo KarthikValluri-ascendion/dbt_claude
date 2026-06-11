@@ -1,0 +1,86 @@
+version: 2
+
+models:
+  # ── Bronze ───────────────────────────────────────────────────────────────
+  - name: brz_zoom_phone_subscriptions
+    description: "Bronze: 1:1 typed landing of raw Zoom Phone billing subscriptions. No logic."
+    columns:
+      - name: subscription_id
+        tests: [not_null, unique]
+      - name: mrr
+        tests: [not_null]
+      - name: line_status
+        tests:
+          - accepted_values:
+              values: ['active', 'cancelled', 'suspended']
+
+  - name: brz_zoom_phone_cdr
+    description: "Bronze: 1:1 typed landing of raw Zoom Phone call detail records (CDR)."
+    columns:
+      - name: call_id
+        tests: [not_null, unique]
+      - name: user_id
+        tests: [not_null]
+
+  # ── Silver ───────────────────────────────────────────────────────────────
+  - name: slv_zoom_phone_subscriptions
+    description: >
+      Silver: conformed Zoom Phone subscriptions feeding ARR. Per the certified
+      catalog, ARR is built from ACTIVE lines only — cancelled/suspended lines
+      should be filtered out here.
+    columns:
+      - name: subscription_id
+        tests: [not_null, unique]
+      - name: mrr
+        tests: [not_null]
+
+  - name: slv_zoom_phone_usage
+    description: >
+      Silver: distinct Zoom Phone active users (>=1 call in the trailing 30 days,
+      anchored to the latest call in telemetry).
+    columns:
+      - name: user_id
+        tests: [not_null]
+
+  # ── Gold ─────────────────────────────────────────────────────────────────
+  - name: gld_zoom_certified_metrics
+    description: >
+      Gold: one row per certified Zoom Phone metric, value COMPUTED from silver
+      per the catalog's system-of-record. Must tally with the certified catalog.
+    columns:
+      - name: metric_key
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              values: ['phone_arr', 'phone_active_users']
+      - name: computed_value
+        tests: [not_null]
+      - name: certified_value
+        tests: [not_null]
+
+  - name: gld_zoom_metric_reconciliation
+    description: >
+      Gold: each computed Zoom Phone metric vs the certified catalog, with
+      variance and a discrepancy flag (|variance| > threshold). The gold<->catalog
+      tally the reconciliation skill grounds on.
+    columns:
+      - name: metric_key
+        tests: [not_null, unique]
+      - name: is_discrepant
+        description: TRUE when the computed gold value diverges from the certified catalog beyond threshold.
+
+seeds:
+  - name: mart_zoom_metric_catalog
+    description: >
+      The certified Zoom Phone metric catalog / glossary — canonical definition,
+      system-of-record, certified target value, and discrepancy threshold per
+      metric. Trusted source the gold layer must reconcile against.
+    columns:
+      - name: metric_key
+        tests: [not_null, unique]
+      - name: system_of_record
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Billing', 'Telemetry']

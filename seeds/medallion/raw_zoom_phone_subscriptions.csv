@@ -1,0 +1,9 @@
+subscription_id,account_id,account_name,mrr,line_status,provisioned_seats,billing_month
+sub-001,acc-101,Acme Corp,50000,active,520,2026-06
+sub-002,acc-102,Globex,40000,active,410,2026-06
+sub-003,acc-103,Initech,30000,active,300,2026-06
+sub-004,acc-104,Umbrella,35000,active,360,2026-06
+sub-005,acc-105,Hooli,25000,active,250,2026-06
+sub-006,acc-106,Stark Industries,20000,active,210,2026-06
+sub-007,acc-107,Wayne Enterprises,18000,cancelled,190,2026-06
+sub-008,acc-108,Soylent,12000,suspended,130,2026-06
