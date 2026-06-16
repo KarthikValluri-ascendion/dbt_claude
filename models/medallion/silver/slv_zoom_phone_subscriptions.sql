@@ -13,6 +13,7 @@ WITH subs AS (
 
     SELECT * FROM {{ ref('brz_zoom_phone_subscriptions') }}
     WHERE line_status = 'active'
+    
 
 ),
 
@@ -35,4 +36,5 @@ FROM subs s
 JOIN zuora z USING (subscription_id)
 -- Keep only lines Zuora confirms are billable (collectible). Per the certified
 -- catalog, past_due and cancelled lines are excluded from ARR. (Refs SCRUM-20)
-WHERE z.billing_status = 'active'
+--WHERE z.billing_status = 'active'
+WHERE z.billing_status IN ('active', 'past_due')
