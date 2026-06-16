@@ -35,5 +35,5 @@ SELECT
 FROM subs s
 JOIN zuora z USING (subscription_id)
 -- Keep only lines Zuora confirms are billable (collectible). Per the certified
--- catalog, past_due and cancelled lines are excluded from ARR. (Refs SCRUM-20, SCRUM-21)
+-- catalog, past_due and cancelled lines are excluded from ARR. (Refs SCRUM-20, SCRUM-21, SCRUM-23)
 WHERE z.billing_status = 'active'
